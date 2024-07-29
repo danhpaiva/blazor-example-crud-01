@@ -1,0 +1,97 @@
+﻿@page "/Pessoas/edit"
+
+@using Microsoft.EntityFrameworkCore
+@using CadastroPessoas.Models
+@inject CadastroPessoas.Data.AppDbContext Db
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Pessoa</h4>
+<hr />
+@if (Pessoa is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Pessoa" OnValidSubmit="UpdatePessoa" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Pessoa.Id" value="@Pessoa.Id" />
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <InputText id="nome" @bind-Value="Pessoa.Nome" class="form-control" />
+                    <ValidationMessage For="() => Pessoa.Nome" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="cpf" class="form-label">CPF:</label>
+                    <InputText id="cpf" @bind-Value="Pessoa.CPF" class="form-control" />
+                    <ValidationMessage For="() => Pessoa.CPF" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <InputText id="email" @bind-Value="Pessoa.Email" class="form-control" />
+                    <ValidationMessage For="() => Pessoa.Email" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/pessoas">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Pessoa? Pessoa { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Pessoa ??= await Db.Pessoas.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Pessoa is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdatePessoa()
+    {
+        Db.Attach(Pessoa!).State = EntityState.Modified;
+
+        try
+        {
+            await Db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!PessoaExists(Pessoa!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/pessoas");
+    }
+
+    bool PessoaExists(int id)
+    {
+        return Db.Pessoas.Any(e => e.Id == id);
+    }
+}

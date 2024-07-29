@@ -1,0 +1,55 @@
+﻿@page "/pessoas/create"
+
+@using Microsoft.EntityFrameworkCore
+@using CadastroPessoas.Models
+@inject CadastroPessoas.Data.AppDbContext Db
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Pessoa</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Pessoa" OnValidSubmit="AddPessoa" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome:</label> 
+                <InputText id="nome" @bind-Value="Pessoa.Nome" class="form-control" /> 
+                <ValidationMessage For="() => Pessoa.Nome" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="cpf" class="form-label">CPF:</label> 
+                <InputText id="cpf" @bind-Value="Pessoa.CPF" class="form-control" /> 
+                <ValidationMessage For="() => Pessoa.CPF" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label> 
+                <InputText id="email" @bind-Value="Pessoa.Email" class="form-control" /> 
+                <ValidationMessage For="() => Pessoa.Email" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/pessoas">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public Pessoa Pessoa { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddPessoa()
+    {
+        Db.Pessoas.Add(Pessoa);
+        await Db.SaveChangesAsync();
+        NavigationManager.NavigateTo("/pessoas");
+    }
+}

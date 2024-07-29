@@ -1,0 +1,50 @@
+﻿@page "/pessoas/details"
+
+@using Microsoft.EntityFrameworkCore
+@using CadastroPessoas.Models
+@inject CadastroPessoas.Data.AppDbContext Db
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Pessoa</h4>
+    <hr />
+    @if (pessoa is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Nome</dt>
+            <dd class="col-sm-10">@pessoa.Nome</dd>
+            <dt class="col-sm-2">CPF</dt>
+            <dd class="col-sm-10">@pessoa.CPF</dd>
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@pessoa.Email</dd>
+        </dl>
+        <div>
+            <a href="@($"/pessoas/edit?id={pessoa.Id}")">Edit</a> |
+            <a href="@($"/pessoas")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Pessoa? pessoa;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pessoa = await Db.Pessoas.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (pessoa is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

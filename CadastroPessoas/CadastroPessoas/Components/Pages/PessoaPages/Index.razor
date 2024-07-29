@@ -1,0 +1,26 @@
+﻿@page "/pessoas"
+
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using CadastroPessoas.Models
+@inject CadastroPessoas.Data.AppDbContext Db
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="pessoas/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="Db.Pessoas">
+    <PropertyColumn Property="pessoa => pessoa.Nome" />
+    <PropertyColumn Property="pessoa => pessoa.CPF" />
+    <PropertyColumn Property="pessoa => pessoa.Email" />
+
+    <TemplateColumn Context="pessoa">
+        <a href="@($"pessoas/edit?id={pessoa.Id}")">Edit</a> |
+        <a href="@($"pessoas/details?id={pessoa.Id}")">Details</a> |
+        <a href="@($"pessoas/delete?id={pessoa.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
